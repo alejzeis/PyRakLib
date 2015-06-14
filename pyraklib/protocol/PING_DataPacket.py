@@ -27,10 +27,10 @@ class PING_DataPacket(Packet):
 
     pingID = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.putLong(self.pingID)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.pingID = self.getLong()

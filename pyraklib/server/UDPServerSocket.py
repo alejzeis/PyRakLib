@@ -30,7 +30,6 @@ class UDPServerSocket:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         try:
             self.socket.bind((interface, port))
-            logger.error("Binded to: "+interface+":"+str(port))
         except Exception as e:
             logger.error("FAILED TO BIND TO PORT! Perhaps another server is running on the port?")
             logger.error(str(e))

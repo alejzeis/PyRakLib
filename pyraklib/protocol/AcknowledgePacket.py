@@ -32,7 +32,7 @@ class AcknowledgePacket(Packet):
     @abstractmethod
     def getPID(): pass
 
-    def encode(self):
+    def _encode(self):
         super().clean()
         payload = bytearray()
         self.seqNums = sorted(self.seqNums)
@@ -77,7 +77,7 @@ class AcknowledgePacket(Packet):
         self.putShort(records)
         self.put(payload)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         count = self.getShort()
         self.seqNums = ()

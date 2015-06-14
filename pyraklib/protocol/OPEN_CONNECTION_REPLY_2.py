@@ -30,7 +30,7 @@ class OPEN_CONNECTION_REPLY_2(Packet):
     clientAddress = ()
     mtuSize = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.put(PyRakLib.MAGIC)
         self.putLong(self.serverID)
@@ -38,7 +38,7 @@ class OPEN_CONNECTION_REPLY_2(Packet):
         self.putShort(self.mtuSize)
         self.putByte(0) # Server security
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.get(16) # MAGIC
         self.serverID = self.getLong()

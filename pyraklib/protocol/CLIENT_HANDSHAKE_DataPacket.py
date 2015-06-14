@@ -33,7 +33,7 @@ class CLIENT_HANDSHAKE_DataPacket(Packet):
     sendPing = None
     sendPong = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.putAddress(self.address, self.port, 4) #TODO: Correct version
         for i in range(0, 10):
@@ -42,7 +42,7 @@ class CLIENT_HANDSHAKE_DataPacket(Packet):
         self.putLong(self.sendPing)
         self.putLong(self.sendPong)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.address, self.port = self.getAddress()
         for i in range(0, 10):

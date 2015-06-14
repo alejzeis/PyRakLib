@@ -34,7 +34,7 @@ class DataPacket(Packet):
     @abstractmethod
     def getPID(): pass
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.getPID(), False)
         self.putLTriad(self.seqNumber)
         for packet in self.packets:
@@ -53,7 +53,7 @@ class DataPacket(Packet):
 
         return length
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.seqNumber = self.getLTriad()
         while not self.feof():

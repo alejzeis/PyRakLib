@@ -34,7 +34,7 @@ class Packet:
             offset = len(self.buffer) - 1
 
             return ""
-        elif length == True:
+        elif isinstance(length, bool) and length:
             return self.buffer[0:self.offset]
         else:
             buffer = self.buffer[self.offset:self.offset+length]
@@ -62,7 +62,7 @@ class Packet:
     def getAddress(self):
         version = self.getByte()
         if version == 4:
-            addr = ((~self.getByte()) & 0xff) +"."+ ((~self.getByte() & 0xff)) +"."+ ((~self.getByte()) & 0xff) +"." +((self.getByte()) & 0xff)
+            addr = str(((~self.getByte())) & 0xff) +"."+ str(((~self.getByte() & 0xff))) +"."+ str(((~self.getByte()) & 0xff)) +"." + str(((self.getByte()) & 0xff))
             port = self.getShort()
             return (addr, port, version)
 
@@ -92,10 +92,10 @@ class Packet:
         self.buffer += Binary.writeLTriad(t)
 
     def putAddress(self, addr, port, version = 4):
-        self.put(version)
+        self.putByte(version)
         if version == 4:
             for s in str(addr).split("."):
-                self.put(s & 0xff)
+                self.putByte(int(s) & 0xff, False)
             self.putShort(port)
 
     def putString(self, string):
@@ -107,8 +107,21 @@ class Packet:
         self.offset = 0
         self.sendTime = None
 
-    @abstractmethod
-    def encode(self): pass
+    def cleanBuffer(self):
+        self.buffer = bytearray()
+        self.offset = 0
+        self.sendTime = None
+
+    def encode(self):
+        self.cleanBuffer()
+        self._encode()
+
+    def decode(self):
+        self.offset = 0
+        self._decode()
 
     @abstractmethod
-    def decode(self): pass
+    def _encode(self): pass
+
+    @abstractmethod
+    def _decode(self): pass

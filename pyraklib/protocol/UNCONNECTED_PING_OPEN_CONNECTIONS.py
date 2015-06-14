@@ -20,11 +20,7 @@ PyRakLib networking library.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from pyraklib.protocol.UNCONNECTED_PING import UNCONNECTED_PING
-import warnings
 
 
 class UNCONNECTED_PING_OPEN_CONNECTIONS(UNCONNECTED_PING):
     PID = 0x02
-
-    def __init__(self):
-        warnings.warn("UNCONNECTED_PING_OPEN_CONNECTIONS is deprecated, use UNCONNECTED_PING instead.")

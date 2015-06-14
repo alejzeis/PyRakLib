@@ -29,14 +29,14 @@ class OPEN_CONNECTION_REQUEST_1(Packet):
     protocol = PyRakLib.PROTOCOL
     mtuSize = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.put(PyRakLib.MAGIC)
         self.putByte(self.protocol)
         for i in range(0, self.mtuSize - 18):
             self.putByte(0)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.get(16) # MAGIC
         self.protocol = self.get()

@@ -29,14 +29,14 @@ class OPEN_CONNECTION_REPLY_1(Packet):
     serverID = None
     mtuSize = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.put(PyRakLib.MAGIC)
         self.putLong(self.serverID)
         self.putByte(0)  # Server security
         self.putShort(self.mtuSize)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.get(16) # MAGIC
         self.serverID = self.getLong()

@@ -25,8 +25,8 @@ from pyraklib.protocol.Packet import Packet
 class CLIENT_DISCONNECT_DataPacket(Packet):
     PID = 0x15
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
 
-    def decode(self):
+    def _decode(self):
         self.get()

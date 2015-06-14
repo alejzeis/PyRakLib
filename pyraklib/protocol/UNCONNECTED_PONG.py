@@ -31,7 +31,7 @@ class UNCONNECTED_PONG(Packet):
     serverID = None
     serverName = None
 
-    def encode(self):
+    def _encode(self):
         super().clean()
         self.putByte(self.PID)
         self.putLong(self.pingID)
@@ -39,7 +39,7 @@ class UNCONNECTED_PONG(Packet):
         self.put(PyRakLib.MAGIC)
         self.putString(self.serverName)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.pingID = self.getLong()
         self.serverID = self.getLong()

@@ -29,7 +29,7 @@ class CLIENT_CONNECT_DataPacket(Packet):
     sendPing = None
     useSecurity = False
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.putLong(self.clientID)
         self.putLong(self.sendPing)
@@ -38,7 +38,7 @@ class CLIENT_CONNECT_DataPacket(Packet):
         else:
             self.putByte(0)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.clientID = self.getLong()
         self.sendPing = self.getLong()

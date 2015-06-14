@@ -28,11 +28,11 @@ class UNCONNECTED_PING(Packet):
     PID = 0x01
     pingID = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.putLong(self.pingID)
         self.put(PyRakLib.MAGIC)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.pingID = self.getLong()

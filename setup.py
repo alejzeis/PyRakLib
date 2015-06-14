@@ -20,10 +20,11 @@ PyRakLib networking library.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from setuptools import setup, find_packages
+from pyraklib import PyRakLib
 
 setup(
     name="PyRakLib",
-    version="1.0b1",
+    version=PyRakLib.LIBRARY_VERSION,
     description="A port of the PHP RakLib library to Python.",
     long_description="PyRakLib is a networking library that follows the RakNet protocol for MCPE. It is ported from the PHP library: RakLib.\nYou can find the original library here: https://github.com/PocketMine/RakLib",
     url="https://github.com/jython234/PyRakLib",
@@ -38,7 +39,6 @@ setup(
         'Topic :: Software Development :: Libraries'
     ],
     keywords='PHP library MCPE minecraft raknet raklib networking Python',
-    package_dir={'':'pyraklib'},
-    py_modules=['pyraklib', 'Binary'],
-    packages=find_packages(where='pyraklib', exclude=['tests'])
+    packages=find_packages(where='.', exclude=['tests']),
+    requires=['requests']
 )

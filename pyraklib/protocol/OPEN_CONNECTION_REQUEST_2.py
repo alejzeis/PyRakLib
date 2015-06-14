@@ -30,14 +30,14 @@ class OPEN_CONNECTION_REQUEST_2(Packet):
     serverAddress = ()
     mtuSize = None
 
-    def encode(self):
+    def _encode(self):
         self.putByte(self.PID)
         self.put(PyRakLib.MAGIC)
         self.putAddress(self.serverAddress[0], self.serverAddress[1], self.serverAddress[2])
         self.putShort(self.mtuSize)
         self.putLong(self.clientID)
 
-    def decode(self):
+    def _decode(self):
         self.get()
         self.get(16) # MAGIC
         self.serverAddress = self.getAddress()

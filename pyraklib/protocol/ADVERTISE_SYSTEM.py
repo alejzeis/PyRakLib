@@ -20,11 +20,7 @@ PyRakLib networking library.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from pyraklib.protocol.UNCONNECTED_PONG import UNCONNECTED_PONG
-import warnings
 
 
 class ADVERTISE_SYSTEM(UNCONNECTED_PONG):
     PID = 0x1D
-
-    def __init__(self):
-        warnings.warn("ADVERTISE_SYSTEM is deprecated, use UNCONNECTED_PONG instead.")
