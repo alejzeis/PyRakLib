@@ -19,14 +19,20 @@ PyRakLib networking library.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-import logging
-from pyraklib.PyRakLib import PyRakLib
+from pyraklib.server import PyRakLibServer
 from pyraklib.server import ServerHandler
-from pyraklib.server.PyRakLibServer import PyRakLibServer
 import time
+import sys
 
-print(PyRakLib.MAGIC)
+try:
+    server = PyRakLibServer(19132)
+    handler = ServerHandler(server, None)
+    handler.sendOption("name", "MCCPP;MINECON;TestServer")
 
-server = PyRakLibServer(19132, interface=" ")
-handler = ServerHandler(server, None)
-handler.sendOption("name", "MCPE;Hi there;27;0.11.0;0;5")
+    time.sleep(10)
+    handler.shutdown()
+    time.sleep(2)
+    sys.exit(0)
+except Exception as e:
+    server.logger.critical("Test Failed: "+str(e))
+    sys.exit(1)

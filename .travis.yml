@@ -1,4 +1,4 @@
 language: python
 python:
   - "3.4"
-script: "python setup.py install && python tests/DemoServer.py"
+script: python TestServer.py
