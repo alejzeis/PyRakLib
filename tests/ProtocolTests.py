@@ -87,6 +87,23 @@ except Exception as e:
     print("UNCONNECTED_PONG Encode/Decode failed: " + str(e))
     failedTests += 1
 
+try:
+    pkt = OPEN_CONNECTION_REQUEST_2()
+    pkt.serverAddress = ("54.187.61.221", 19132, 4)
+    pkt.clientID = 2
+    pkt.mtuSize = 14447
+    pkt.encode()
+    if pkt.buffer[0] is not pkt.PID:
+        raise Exception("Buffer PID is not equal to Packet PID.")
+    pkt.offset = 0
+    pkt.decode()
+    print("OPEN_CONNECTION_REQUEST_2 succeeded")
+    goodTests += 1
+
+except Exception as e:
+    print("UNCONNECTED_PONG Encode/Decode failed: " + str(e))
+    failedTests += 1
+    raise e
 
 
 print("Succeeded tests: " + str(goodTests) + "\nFailedTests: "+str(failedTests))

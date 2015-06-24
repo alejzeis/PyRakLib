@@ -46,7 +46,7 @@ class UDPServerSocket:
             data = self.socket.recvfrom(65535)
             print("Got a packet")
             return data
-        except BlockingIOError:
+        except Exception as e:
             pass
 
     def writePacket(self, buffer, dest, port):

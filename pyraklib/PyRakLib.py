@@ -24,7 +24,7 @@ from abc import ABCMeta
 class PyRakLib:
     __metaclass__ = ABCMeta
 
-    LIBRARY_VERSION = "1.0.8b1"
+    LIBRARY_VERSION = "1.0.9b1"
     VERSION = "0.7.0"
     PROTOCOL = 5
     MAGIC = bytearray.fromhex("00 ff ff 00 fe fe fe fe fd fd fd fd 12 34 56 78")

@@ -52,11 +52,11 @@ class Binary:
 
     @staticmethod
     def readShort(raw):
-        return unpack(">h", raw)[0]
+        return unpack(">H", raw)[0]
 
     @staticmethod
     def writeShort(short):
-        return pack(">h", short)
+        return pack(">H", short)
 
     @staticmethod
     def readInt(raw):

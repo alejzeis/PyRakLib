@@ -301,7 +301,7 @@ class Session:
                 self.handleSplit(packet)
             return
 
-        id = ord(str(packet.buffer[0]))
+        id = packet.buffer[0]
         if id < 0x80: # internal data packet
             if self.state == self.STATE_CONNECTING_2:
                 if id == CLIENT_CONNECT_DataPacket.PID:
@@ -361,8 +361,8 @@ class Session:
                 try:
                     self.receivedWindow[packet.seqNumber]
                     go = True
-                except NameError:
-                    pass
+                except IndexError:
+                    return
                 if packet.seqNumber < self.windowStart or packet.seqNumber > self.windowEnd or go:
                     return
 
@@ -377,7 +377,7 @@ class Session:
                     while i < packet.seqNumber:
                         try:
                             self.receivedWindow[i]
-                        except NameError:
+                        except IndexError:
                             self.NACKQueue[i] = i
                         i += 1
 
@@ -433,7 +433,7 @@ class Session:
                     pk = OPEN_CONNECTION_REPLY_2()
                     pk.mtuSize = self.mtuSize
                     pk.serverID = self.sessionManager.getID()
-                    pk.clientAddress = self.address, self.port
+                    pk.clientAddress = self.address, self.port, 4
                     self.sendPacket(pk)
                     self.state = self.STATE_CONNECTING_2
 
