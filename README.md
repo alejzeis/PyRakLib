@@ -1,4 +1,4 @@
-# PyRakLib [![Build Status](https://travis-ci.org/jython234/PyRakLib.svg)](https://travis-ci.org/jython234/PyRakLib)
+# PyRakLib [![Travis](https://img.shields.io/travis/jython234/PyRakLib.svg?style=flat-square)](https://travis-ci.org/jython234/PyRakLib) [![PyPI](https://img.shields.io/pypi/v/PyRakLib.svg?style=flat-square)]()
 A port of the PHP RakLib library to python.
 
 ### How to get PyRakLib:
