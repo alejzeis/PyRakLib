@@ -32,7 +32,7 @@ class DataPacket(Packet):
 
     @staticmethod
     @abstractmethod
-    def getPID(): pass
+    def getPID() -> int: pass
 
     def _encode(self):
         self.putByte(self.getPID(), False)
@@ -43,7 +43,7 @@ class DataPacket(Packet):
             else:
                 self.put(packet)
 
-    def length(self):
+    def length(self) -> int:
         length = 4
         for packet in self.packets:
             if isinstance(packet, EncapsulatedPacket):

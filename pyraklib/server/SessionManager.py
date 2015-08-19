@@ -20,6 +20,7 @@ PyRakLib networking library.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import copy
+import json
 
 import random
 import time
@@ -94,12 +95,9 @@ class SessionManager:
 
     def tick(self):
         time_ = microtime(True)
-        try:
-            for session in self.sessions.values():
-                session.update(time_)
-        except RuntimeError as e:
-            if "changed size" in str(e):
-                self.tick()
+        values = list(self.sessions.values())
+        for session in values:
+            session.update(time_)
 
         for (address, count) in self.ipSec:
             if count > self.packetLimit or count == self.packetLimit:
@@ -108,7 +106,7 @@ class SessionManager:
 
         if (self.ticks & 0b1111) == 0:
             diff = max(0.005, time_ - self.lastMeasure)
-            self.streamOption("bandwith", pickle.dumps({
+            self.streamOption("bandwith", json.dumps({
                 "up":self.sendBytes / diff,
                 "down":self.receiveBytes / diff
             }))

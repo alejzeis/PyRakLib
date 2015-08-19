@@ -19,6 +19,7 @@ PyRakLib networking library.
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import logging
 import socket
 
 class UDPServerSocket:
@@ -26,7 +27,8 @@ class UDPServerSocket:
     logger = None
     socket = None
 
-    def __init__(self, logger, port = 19132, interface = "0.0.0.0"):
+    def __init__(self, logger: logging.Logger, port: int = 19132, interface: str = "0.0.0.0"):
+        self.logger = logger
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         try:
             self.socket.bind((interface, port))
@@ -44,11 +46,12 @@ class UDPServerSocket:
     def readPacket(self):
         try:
             data = self.socket.recvfrom(65535)
-            print("Got a packet")
+            print("Packet IN: "+str(data))
             return data
         except Exception as e:
             pass
 
     def writePacket(self, buffer, dest, port):
+        print("Packet OUT: "+str(buffer))
         return self.socket.sendto(buffer, (dest, port))
 

@@ -23,17 +23,18 @@ from pyraklib.Binary import Binary
 from pyraklib.PyRakLib import PyRakLib
 from pyraklib.protocol import EncapsulatedPacket
 import time
+from pyraklib.server import PyRakLibServer, ServerInstance
 
 
 class ServerHandler:
     server = None
     instance = None
 
-    def __init__(self, server, instance):
+    def __init__(self, server: PyRakLibServer, instance: ServerInstance):
         self.server = server
         self.instance = instance
 
-    def sendEncapsulated(self, identifier, packet, flags = PyRakLib.PRIORITY_NORMAL):
+    def sendEncapsulated(self, identifier: str, packet: bytearray, flags: int = PyRakLib.PRIORITY_NORMAL):
         buffer = ""
         buffer += chr(PyRakLib.PACKET_ENCAPSULATED)
         buffer += chr(len(identifier))
@@ -43,19 +44,19 @@ class ServerHandler:
 
         self.server.pushMainToThreadPacket(buffer)
 
-    def sendRaw(self, address, port, payload):
+    def sendRaw(self, address: str, port: int, payload: bytearray):
         buffer = chr(PyRakLib.PACKET_RAW) + chr(len(address)) + address + str(Binary.writeShort(port)) + payload
         self.server.pushMainToThreadPacket(buffer)
 
-    def closeSession(self, identifier, reason):
+    def closeSession(self, identifier: str, reason: str):
         buffer = chr(PyRakLib.PACKET_CLOSE_SESSION) + chr(len(identifier)) + identifier + chr(len(reason)) + reason
         self.server.pushMainToThreadPacket(buffer)
 
-    def sendOption(self, name, value):
+    def sendOption(self, name: str, value: str):
         buffer = chr(PyRakLib.PACKET_SET_OPTION) + chr(len(name)) + name + value
         self.server.pushMainToThreadPacket(buffer)
 
-    def blockAddress(self, address, timeout):
+    def blockAddress(self, address: str, timeout: int):
         buffer = chr(PyRakLib.PACKET_BLOCK_ADDRESS) + chr(len(address)) + address + str(Binary.writeInt(timeout))
         self.server.pushMainToThreadPacket(buffer)
 
@@ -75,6 +76,8 @@ class ServerHandler:
 
     def handlePacket(self):
         packet = self.server.readThreadToMainPacket()
+        if packet == None:
+            return
         if len(packet) > 0:
             id = ord(packet[0])
             offset = 1
@@ -87,8 +90,8 @@ class ServerHandler:
                 buffer = packet[offset:]
                 self.instance.handleEncapsulated(identifier, EncapsulatedPacket.fromBinary(buffer, True), flags)
             elif id == PyRakLib.PACKET_RAW:
-                offset += 1
                 length = ord(packet[offset])
+                offset += 1
                 address = packet[offset:offset+length]
                 offset += length
                 port = Binary.readShort(packet[offset:offset+2])
@@ -96,11 +99,11 @@ class ServerHandler:
                 payload = packet[offset:]
                 self.instance.handleRaw(address, port, payload)
             elif id == PyRakLib.PACKET_SET_OPTION:
-                offset += 1
                 length = ord(packet[offset])
+                offset += 1
                 name = packet[offset:offset+length]
                 offset += length
-                value = packet[offset:offset+length]
+                value = packet[offset:]
                 self.instance.handleOption(name, value)
             elif id == PyRakLib.PACKET_OPEN_SESSION:
                 offset += 1
@@ -115,11 +118,12 @@ class ServerHandler:
                 clientID = Binary.readLong(packet[offset:offset+8])
                 self.instance.openSession(identifier, address, port, clientID)
             elif id == PyRakLib.PACKET_CLOSE_SESSION:
+                length = ord(packet[offset])
                 offset += 1
-                length = ord(packet[offset])
                 identifier = packet[offset:offset+length]
-                offset += length + 1
+                offset += length
                 length = ord(packet[offset])
+                offset += 1
                 reason = packet[offset:offset+length]
                 self.instance.closeSession(identifier, reason)
             elif id == PyRakLib.PACKET_INVALID_SESSION:

@@ -21,6 +21,7 @@ PyRakLib networking library.
 """
 import os, logging
 import atexit
+import queue
 from threading import Thread
 from pyraklib.Queue import Queue
 from pyraklib.server.SessionManager import SessionManager
@@ -41,8 +42,7 @@ class PyRakLibServer(Thread):
 
     mainPath = None
 
-    def __init__(self, port, logger = logging.getLogger("PyRakLib"),interface = "0.0.0.0"):
-
+    def __init__(self, port: int, logger: logging.Logger = logging.getLogger("PyRakLib"),interface: str = "0.0.0.0"):
         super().__init__()
         self.port = port
         if port < 1 or port > 65536:
@@ -52,8 +52,8 @@ class PyRakLibServer(Thread):
         self.logger = logger
         self.mainPath = os.getcwd()
 
-        self.internalQueue = Queue()
-        self.externalQueue = Queue()
+        self.internalQueue = queue.LifoQueue()
+        self.externalQueue = queue.LifoQueue()
 
         self.start()
 
@@ -64,17 +64,21 @@ class PyRakLibServer(Thread):
         if self._shutdown is not True:
             self.logger.error("PyRakLib Thread [#"+str(self.ident)+"] crashed.")
 
-    def pushMainToThreadPacket(self, pkt):
-        self.internalQueue.append(pkt)
+    def pushMainToThreadPacket(self, pkt: bytearray):
+        self.internalQueue.put(pkt)
 
-    def readMainToThreadPacket(self):
-        return self.internalQueue.shift()
+    def readMainToThreadPacket(self) -> bytearray:
+        if self.internalQueue.empty():
+            return None
+        return self.internalQueue.get()
 
-    def pushThreadToMainPacket(self, pkt):
-        self.externalQueue.append(pkt)
+    def pushThreadToMainPacket(self, pkt: bytearray):
+        self.externalQueue.put(pkt)
 
-    def readThreadToMainPacket(self):
-        return self.externalQueue.shift()
+    def readThreadToMainPacket(self) -> bytearray:
+        if self.externalQueue.empty():
+            return None
+        return self.externalQueue.get()
 
     def run(self):
         atexit.register(self.shutdownHandler)

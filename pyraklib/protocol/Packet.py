@@ -29,10 +29,9 @@ class Packet:
     buffer = bytearray()
     sendTime = None
 
-    def get(self, length = 1):
+    def get(self, length = 1) -> bytearray:
         if length < 0:
             offset = len(self.buffer) - 1
-
             return ""
         elif isinstance(length, bool) and length:
             return self.buffer[0:self.offset]
@@ -41,64 +40,64 @@ class Packet:
             self.offset += length
             return buffer
 
-    def getLong(self):
+    def getLong(self) -> int:
         return Binary.readLong(self.get(8))
 
-    def getInt(self):
+    def getInt(self) -> int:
         return Binary.readInt(self.get(4))
 
-    def getShort(self):
+    def getShort(self) -> int:
         return Binary.readShort(self.get(2))
 
-    def getLTriad(self):
+    def getLTriad(self) -> int:
         return Binary.readLTriad(self.get(3))
 
-    def getByte(self):
+    def getByte(self) -> int:
         return ord(self.get())
 
-    def getString(self):
+    def getString(self) -> str:
         return self.get(self.getShort())
 
-    def getAddress(self):
+    def getAddress(self) -> tuple:
         version = self.getByte()
         if version == 4:
             addr = str(((~self.getByte())) & 0xff) +"."+ str(((~self.getByte() & 0xff))) +"."+ str(((~self.getByte()) & 0xff)) +"." + str(((self.getByte()) & 0xff))
             port = self.getShort()
             return (addr, port, version)
 
-    def feof(self):
+    def feof(self) -> bool:
         try:
             self.buffer[self.offset]
             return True
         except IndexError:
             return False
 
-    def put(self, data):
+    def put(self, data: bytearray):
         self.buffer += data
 
-    def putByte(self, b, signed = True):
+    def putByte(self, b: int, signed: bool = True):
         self.buffer += Binary.writeByte(b, signed)
 
-    def putLong(self, l):
+    def putLong(self, l: int):
         self.buffer += Binary.writeLong(l)
 
-    def putInt(self, i):
+    def putInt(self, i: int):
         self.buffer += Binary.writeInt(i)
 
-    def putShort(self, s):
+    def putShort(self, s: int):
         self.buffer += Binary.writeShort(s)
 
-    def putLTriad(self, t):
+    def putLTriad(self, t: int):
         self.buffer += Binary.writeLTriad(t)
 
-    def putAddress(self, addr, port, version = 4):
+    def putAddress(self, addr: str, port: int, version: int = 4):
         self.putByte(version)
         if version == 4:
             for s in str(addr).split("."):
                 self.putByte(int(s) & 0xff, False)
             self.putShort(port)
 
-    def putString(self, string):
+    def putString(self, string: str):
         self.buffer += Binary.writeShort(len(string))
         self.buffer += bytes(string, "UTF-8")
 

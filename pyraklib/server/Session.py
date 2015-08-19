@@ -20,6 +20,8 @@ PyRakLib networking library.
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import math
+import queue
+import collections
 from pyraklib import PyRakLib
 from pyraklib.protocol import *
 from pyraklib.protocol.ACK import ACK
@@ -28,13 +30,13 @@ from pyraklib.protocol.DataPackets import DATA_PACKET_4, DATA_PACKET_0
 import time as time_
 import copy
 
-def microtime(get_as_float = False) :
+def microtime(get_as_float = False):
     if get_as_float:
         return time_.time()
     else:
         return '%f %d' % math.modf(time_.time())
 
-def str_split(s, n):
+def str_split(s, n) -> str:
     ret = []
     for i in range(0, len(s), n):
         ret.append(s[i:i+n])
@@ -42,6 +44,17 @@ def str_split(s, n):
 
 def ksort(d):
      return [(k,d[k]) for k in sorted(d.keys())]
+
+def isInList(item, l: list) -> bool:
+    try:
+        l[item]
+        return True
+    except NameError:
+        return False
+    except IndexError:
+        return False
+    except KeyError:
+        return False
 
 class Session:
     STATE_UNCONNECTED = 0
@@ -73,8 +86,11 @@ class Session:
 
     isActive = None
 
-    ACKQueue = []
-    NACKQueue = []
+    """@:type collections.deque"""
+    ACKQueue = collections.deque()
+
+    """@:type collections.deque"""
+    NACKQueue = collections.deque()
 
     recoveryQueue = {}
 
@@ -85,7 +101,8 @@ class Session:
     sendQueue = None
 
     windowStart = None
-    receivedWindow = []
+    """@:type collections.deque"""
+    receivedWindow = collections.deque()
     windowEnd = None
 
     reliableWindowStart = None
@@ -120,13 +137,13 @@ class Session:
             pk = ACK()
             pk.packets = self.ACKQueue
             self.sendPacket(pk)
-            self.ACKQueue = []
+            self.ACKQueue.clear()
 
         if len(self.NACKQueue) > 0:
             pk = NACK()
             pk.packets = self.NACKQueue
             self.sendPacket(pk)
-            self.NACKQueue = []
+            self.NACKQueue.clear()
 
         if len(self.packetToSend) > 0:
             limit = 16
@@ -149,8 +166,12 @@ class Session:
                     del self.needACK[identifierACK]
                     self.sessionManager.notifyACK(self, identifierACK)
 
-        for seq in self.recoveryQueue.keys():
+        for seq in copy.deepcopy(self.recoveryQueue).keys():
             pk = self.recoveryQueue.get(seq)
+            if pk.sendTime is None:
+                self.packetToSend.append(pk)
+                del self.recoveryQueue[seq]
+                continue
             if pk.sendTime < (int(time_.time()) - 8):
                 self.packetToSend.append(pk)
                 del self.recoveryQueue[seq]
@@ -169,7 +190,6 @@ class Session:
         self.sessionManager.removeSession(self, reason)
 
     def sendPacket(self, packet):
-        print("Packet OUT: "+str(packet))
         self.sessionManager.sendPacket(packet, self.address, self.port)
 
     def sendTheQueue(self):
@@ -358,18 +378,22 @@ class Session:
             if packet.buffer[0] >= 0x80 and packet.buffer[0] <= 0x8f and isinstance(packet, DataPacket):
                 packet.decode()
 
+                """
                 try:
                     self.receivedWindow[packet.seqNumber]
                     go = True
-                except IndexError:
-                    return
-                if packet.seqNumber < self.windowStart or packet.seqNumber > self.windowEnd or go:
+                except KeyError:
+                    go = False
+                """
+                if packet.seqNumber < self.windowStart or packet.seqNumber > self.windowEnd or isInList(packet.seqNumber, self.receivedWindow):
                     return
 
                 diff = packet.seqNumber - self.lastSeqNumber
 
-                del self.NACKQueue[packet.seqNumber]
-                self.ACKQueue[packet.seqNumber] = packet.seqNumber
+                if isInList(packet.seqNumber, self.NACKQueue):
+                    self.NACKQueue.remove(packet.seqNumber)
+
+                self.ACKQueue.append(packet.seqNumber)
                 self.receivedWindow[packet.seqNumber] = packet.seqNumber
 
                 if diff != 1:
@@ -391,7 +415,7 @@ class Session:
 
             elif isinstance(packet, ACK):
                 packet.decode()
-                for seq in packet.packets:
+                for seq in packet.seqNums:
                     try:
                         for pk in self.recoveryQueue[seq]:
                             if isinstance(pk, EncapsulatedPacket) and pk.needACK and pk.messageIndex != None:
@@ -401,7 +425,7 @@ class Session:
 
             elif isinstance(packet, NACK):
                 packet.decode()
-                for seq in packet.packets:
+                for seq in packet.seqNums:
                     try:
                         pk = self.recoveryQueue[seq]
                         self.sendSeqNumber += 1
@@ -417,7 +441,6 @@ class Session:
                 pk.serverID = 0#self.sessionManager.getID()
                 pk.pingID = packet.pingID
                 pk.serverName = self.sessionManager.name
-                print(pk.serverName)
                 self.sendPacket(pk)
             elif isinstance(packet, OPEN_CONNECTION_REQUEST_1):
                 packet.protocol # TODO: check protocol number and refuse connections
