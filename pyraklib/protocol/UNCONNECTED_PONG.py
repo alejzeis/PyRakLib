@@ -1,47 +1,49 @@
 """
-PyRakLib networking library.
+   PyRakLib networking library.
    This software is not affiliated with RakNet or Jenkins Software LLC.
    This software is a port of PocketMine/RakLib <https://github.com/PocketMine/RakLib>.
    All credit goes to the PocketMine Project (http://pocketmine.net)
- 
-   Copyright (C) 2015  PyRakLib Project
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+   PyRakLib is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   PyRakLib is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with PyRakLib.  If not, see <http://www.gnu.org/licenses/>.
 """
-from pyraklib.PyRakLib import PyRakLib
-from pyraklib.protocol.Packet import Packet
+from pyraklib import PyRakLib
+from pyraklib.protocol import Packet
 
 
 class UNCONNECTED_PONG(Packet):
-    PID = 0x1C
 
-    #Fields
+    """@:type int"""
     pingID = None
+    """@:type int"""
     serverID = None
+    """@:type str"""
     serverName = None
 
-    def _encode(self):
-        super().clean()
-        self.putByte(self.PID)
-        self.putLong(self.pingID)
-        self.putLong(self.serverID)
+    def encode(self):
+        super().encode()
+        self.put_long(self.pingID)
+        self.put_long(self.serverID)
         self.put(PyRakLib.MAGIC)
-        self.putString(self.serverName)
+        self.put_string(self.serverName)
 
-    def _decode(self):
-        self.get()
-        self.pingID = self.getLong()
-        self.serverID = self.getLong()
-        self.get(16) #MAGIC
-        self.serverName = self.getString()
+    def decode(self):
+        super().decode()
+        self.pingID = self.get_long()
+        self.serverID = self.get_long()
+        self._offset += 16
+        self.serverName = self.get_string()
+
+    @staticmethod
+    def get_pid(self) -> int:
+        return 0x1C

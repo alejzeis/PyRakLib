@@ -1,23 +1,21 @@
 """
-PyRakLib networking library.
+   PyRakLib networking library.
    This software is not affiliated with RakNet or Jenkins Software LLC.
    This software is a port of PocketMine/RakLib <https://github.com/PocketMine/RakLib>.
    All credit goes to the PocketMine Project (http://pocketmine.net)
- 
-   Copyright (C) 2015  PyRakLib Project
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+   PyRakLib is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   PyRakLib is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  You should have received a copy of the GNU Lesser General Public License
+  along with PyRakLib.  If not, see <http://www.gnu.org/licenses/>.
 """
 from setuptools import setup, find_packages
 from pyraklib import PyRakLib
@@ -29,8 +27,8 @@ setup(
     long_description="PyRakLib is a networking library that follows the RakNet protocol for MCPE. It is ported from the PHP library: RakLib.\nYou can find the original library here: https://github.com/PocketMine/RakLib",
     url="https://github.com/jython234/PyRakLib",
     author="jython234",
-    author_email="jython234@blockserver.org",
-    license="GPL V3",
+    author_email="jython234@gmail.com",
+    license="LGPL V3",
     classifiers= [
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
