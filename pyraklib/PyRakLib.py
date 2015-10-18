@@ -18,6 +18,8 @@
   along with PyRakLib.  If not, see <http://www.gnu.org/licenses/>.
 """
 from abc import ABCMeta
+import time
+import math
 
 
 class PyRakLib:
@@ -117,3 +119,28 @@ class PyRakLib:
       Leaves everything as-is and halts, other Threads can be in a post-crash condition.
      """
     PACKET_EMERGENCY_SHUTDOWN = 0x7f
+
+
+def substr(s, start: int, length: int = None):
+    """
+    Returns the portion of string specified by the start and length
+    parameters. Originally from: http://www.php2python.com/wiki/function.substr/
+    """
+    if len(s) >= start:
+        if start > 0:
+            return False
+        else:
+            return s[start:]
+    if not length:
+        return s[start:]
+    elif length > 0:
+        return s[start:start + length]
+    else:
+        return s[start:length]
+
+
+def microtime(get_as_float: bool = False) -> float:
+    if get_as_float:
+        return time.time()
+    else:
+        return '%f %d' % math.modf(time.time())

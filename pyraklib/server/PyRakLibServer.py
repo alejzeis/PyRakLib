@@ -21,6 +21,7 @@ from threading import Thread
 from logging import Logger
 import queue, atexit
 from pyraklib.server import UDPServerSocket
+from pyraklib.server.SessionManager import SessionManager
 
 
 class PyRakLibServer(Thread):
@@ -82,5 +83,6 @@ class PyRakLibServer(Thread):
 
     def run(self):
         atexit.register(self.shutdown_handler)
-
         socket = UDPServerSocket(self.logger, self.port, self.interface)
+
+        manager = SessionManager(self, socket)

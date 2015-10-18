@@ -26,7 +26,7 @@ class UDPServerSocket:
     _socket = None
 
     def __init__(self, logger: logging.Logger, port: int = 19132, interface: str = "0.0.0.0"):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.SOL_UDP)
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         # self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1) # Allows sending broadcast messages
         try:
             self._socket.bind((interface, port))
@@ -42,8 +42,13 @@ class UDPServerSocket:
         self._socket.close()
 
     def read_packet(self) -> tuple:
-        data = self._socket.recvfrom(65535)
-        return data
+        data = None
+        try:
+            data = self._socket.recvfrom(65535)
+        except BlockingIOError:
+            pass
+        finally:
+            return data
 
     def write_packet(self, buffer: bytearray, dest: str, port: int) -> bool:
         return self._socket.sendto(buffer, (dest, port))

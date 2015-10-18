@@ -19,6 +19,7 @@
 """
 from abc import ABCMeta, abstractmethod
 from pyraklib import Binary
+from pyraklib.PyRakLib import substr
 
 
 class Packet:
@@ -37,7 +38,7 @@ class Packet:
 
             return None
         elif length:
-            return self.buffer[self._offset:]
+            return substr(self.buffer, self._offset)
 
         buffer = bytearray()
         while length > 0:
